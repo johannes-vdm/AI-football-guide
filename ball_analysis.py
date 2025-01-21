@@ -3,6 +3,10 @@ import numpy as np
 import random
 import json
 import time
+import torch
+from torchvision.models import detection
+from torchvision.transforms import functional as F
+from PIL import Image
 
 class BallTracker:
     def __init__(self, video_path):
@@ -29,6 +33,17 @@ class BallTracker:
         
         cv2.namedWindow('Ball Calibration')
         cv2.setMouseCallback('Ball Calibration', self.mouse_callback)
+        
+        self.setup_model()
+
+    def setup_model(self):
+        print("Loading PyTorch model...")
+        # Load pre-trained Faster R-CNN
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.model = detection.fasterrcnn_resnet50_fpn(pretrained=True)
+        self.model.to(self.device)
+        self.model.eval()
+        print(f"Model loaded on {self.device}")
 
     def get_random_frame(self):
         max_attempts = 10
@@ -140,19 +155,73 @@ class BallTracker:
             json.dump(existing_results, f, indent=4)
         print(f"Results appended to ball_calibration.json (Total entries: {len(existing_results)})")
 
+    def detect_ball(self, frame):
+        # Convert frame to PyTorch tensor
+        image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        image_tensor = F.to_tensor(image).unsqueeze(0).to(self.device)
+        
+        with torch.no_grad():
+            predictions = self.model(image_tensor)
+        
+        # Get predictions for sports ball class (index 37 in COCO dataset)
+        boxes = predictions[0]['boxes'].cpu().numpy()
+        scores = predictions[0]['scores'].cpu().numpy()
+        labels = predictions[0]['labels'].cpu().numpy()
+        
+        # Filter for ball detections (COCO class 37) with high confidence
+        ball_detections = [(box, score) for box, score, label in 
+                          zip(boxes, scores, labels) if label == 37 and score > 0.7]
+        
+        if ball_detections:
+            # Get the highest confidence detection
+            box, score = max(ball_detections, key=lambda x: x[1])
+            # Calculate center point
+            center_x = int((box[0] + box[2]) / 2)
+            center_y = int((box[1] + box[3]) / 2)
+            return (center_x, center_y), score
+        
+        return None, 0.0
+
+    def draw_frame(self, frame):
+        display_frame = frame.copy()
+        
+        # Try automatic ball detection
+        ball_center, confidence = self.detect_ball(frame)
+        
+        if ball_center:
+            # Draw suggested point in blue
+            cv2.circle(display_frame, ball_center, 5, (255, 0, 0), -1)
+            cv2.circle(display_frame, ball_center, 20, (255, 0, 0), 2)
+            cv2.putText(display_frame, 
+                       f'AI Confidence: {confidence:.2f}',
+                       (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+        
+        # Draw user's point in green if it exists
+        if self.current_point:
+            cv2.circle(display_frame, self.current_point, 5, (0, 255, 0), -1)
+            cv2.circle(display_frame, self.current_point, 20, (0, 255, 0), 2)
+        
+        # Draw buttons
+        self.draw_buttons(display_frame)
+        
+        # Show calibration progress and instructions
+        cv2.putText(display_frame, 
+                   f'Calibration: {self.calibration_count + 1}/{self.max_calibrations}',
+                   (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        
+        cv2.putText(display_frame, 
+                   'Click to correct AI detection or Skip if no ball visible',
+                   (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        
+        return display_frame
+
     def calibrate(self):
         self.force_next_frame = False
         
         while self.calibration_count < self.max_calibrations:
-            # Get random frame for each calibration
             frame, frame_number = self.get_random_frame()
             if frame is None:
-                print("Error: Could not get valid frame, trying to reset video capture")
-                self.video.release()
-                self.video = cv2.VideoCapture("barrea.mp4")
-                if not self.video.isOpened():
-                    print("Fatal error: Could not reopen video")
-                    break
+                print("Error: Could not get valid frame")
                 continue
             
             try:
@@ -160,24 +229,13 @@ class BallTracker:
                 self.current_frame_number = frame_number
                 self.force_next_frame = False
                 
+                # Auto-detect ball and set as current point
+                ball_center, confidence = self.detect_ball(frame)
+                if ball_center and confidence > 0.7:
+                    self.current_point = ball_center
+                
                 while not self.force_next_frame:
-                    display_frame = self.current_frame.copy()
-                    
-                    # Draw current point
-                    self.draw_point(display_frame)
-                    
-                    # Draw buttons
-                    self.draw_buttons(display_frame)
-                    
-                    # Show calibration progress and instructions
-                    cv2.putText(display_frame, 
-                               f'Calibration: {self.calibration_count + 1}/{self.max_calibrations}',
-                               (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-                    
-                    cv2.putText(display_frame, 
-                               'Click on ball or press Skip if no ball visible',
-                               (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-                    
+                    display_frame = self.draw_frame(self.current_frame)
                     cv2.imshow('Ball Calibration', display_frame)
                     
                     key = cv2.waitKey(1) & 0xFF
