@@ -116,18 +116,29 @@ class BallTracker:
                 print(f"Ball position marked at {x}, {y}")
 
     def save_results(self):
-        results = []
+        # Load existing results if file exists
+        existing_results = []
+        try:
+            with open('ball_calibration.json', 'r') as f:
+                existing_results = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            existing_results = []
+        
+        # Add new results
         for point in self.calibration_points:
-            results.append({
+            new_point = {
                 'frame_number': point['frame_number'],
                 'x': point['point'][0],
                 'y': point['point'][1],
-                'timestamp': point['timestamp']
-            })
+                'timestamp': point['timestamp'],
+                'session_id': time.strftime("%Y%m%d_%H%M%S")  # Add session identifier
+            }
+            existing_results.append(new_point)
         
+        # Save combined results
         with open('ball_calibration.json', 'w') as f:
-            json.dump(results, f, indent=4)
-        print("Results saved to ball_calibration.json")
+            json.dump(existing_results, f, indent=4)
+        print(f"Results appended to ball_calibration.json (Total entries: {len(existing_results)})")
 
     def calibrate(self):
         self.force_next_frame = False
