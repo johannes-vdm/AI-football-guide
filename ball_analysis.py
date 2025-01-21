@@ -7,26 +7,53 @@ import time
 class BallTracker:
     def __init__(self, video_path):
         self.video = cv2.VideoCapture(video_path)
+        if not self.video.isOpened():
+            raise Exception("Error: Could not open video file")
+        
         self.total_frames = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
+        print(f"Total frames in video: {self.total_frames}")
+        
+        # Start from beginning of video
+        self.video.set(cv2.CAP_PROP_POS_FRAMES, 0)
+        
         self.calibration_points = []
         self.current_frame = None
         self.current_point = None
         self.calibration_count = 0
         self.max_calibrations = 5
+        self.force_next_frame = False
         
-        # Button dimensions
-        self.button_submit = {'x': 50, 'y': 30, 'w': 100, 'h': 40}
-        self.button_skip = {'x': 170, 'y': 30, 'w': 100, 'h': 40}
+        # Larger button dimensions
+        self.button_submit = {'x': 50, 'y': 30, 'w': 150, 'h': 50}
+        self.button_skip = {'x': 250, 'y': 30, 'w': 150, 'h': 50}
         
         cv2.namedWindow('Ball Calibration')
         cv2.setMouseCallback('Ball Calibration', self.mouse_callback)
 
     def get_random_frame(self):
-        random_frame = random.randint(0, self.total_frames - 1)
-        self.video.set(cv2.CAP_PROP_POS_FRAMES, random_frame)
+        max_attempts = 10
+        for _ in range(max_attempts):
+            # Get a random frame from first 80% of the video to avoid end-of-file issues
+            random_frame = random.randint(0, int(self.total_frames * 0.8))
+            
+            # Seek to frame
+            self.video.set(cv2.CAP_PROP_POS_FRAMES, random_frame)
+            
+            # Try to read frame
+            ret, frame = self.video.read()
+            if ret and frame is not None and frame.size > 0:
+                print(f"Successfully loaded frame {random_frame}")
+                return frame, random_frame
+            
+            print(f"Failed to load frame {random_frame}, retrying...")
+        
+        print("Failed to get valid random frame after multiple attempts")
+        # If all attempts fail, try reading the next available frame
         ret, frame = self.video.read()
-        if ret:
-            return frame, random_frame
+        if ret and frame is not None and frame.size > 0:
+            current_frame = int(self.video.get(cv2.CAP_PROP_POS_FRAMES))
+            return frame, current_frame
+        
         return None, None
 
     def draw_buttons(self, frame):
@@ -57,8 +84,18 @@ class BallTracker:
 
     def mouse_callback(self, event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN:
-            # Check if click is on buttons
-            if (self.button_submit['x'] <= x <= self.button_submit['x'] + self.button_submit['w'] and
+            # Check if click is on skip button first
+            if (self.button_skip['x'] <= x <= self.button_skip['x'] + self.button_skip['w'] and
+                  self.button_skip['y'] <= y <= self.button_skip['y'] + self.button_skip['h']):
+                self.calibration_count += 1
+                self.current_point = None
+                print(f"Frame {self.calibration_count} skipped")
+                # Force break from the current frame loop
+                self.force_next_frame = True
+                return
+
+            # Check submit button
+            elif (self.button_submit['x'] <= x <= self.button_submit['x'] + self.button_submit['w'] and
                 self.button_submit['y'] <= y <= self.button_submit['y'] + self.button_submit['h']):
                 if self.current_point:  # Only submit if we have a point
                     self.calibration_points.append({
@@ -69,15 +106,10 @@ class BallTracker:
                     self.calibration_count += 1
                     self.current_point = None
                     print(f"Calibration {self.calibration_count} saved")
-                    self.save_results()  # Save after each submission
+                    self.save_results()
+                    # Force break from the current frame loop
+                    self.force_next_frame = True
                     return
-            elif (self.button_skip['x'] <= x <= self.button_skip['x'] + self.button_skip['w'] and
-                  self.button_skip['y'] <= y <= self.button_skip['y'] + self.button_skip['h']):
-                # Skip this frame without requiring a point
-                self.calibration_count += 1
-                self.current_point = None
-                print(f"Frame {self.calibration_count} skipped")
-                return
             else:
                 # Set new point
                 self.current_point = (x, y)
@@ -98,46 +130,54 @@ class BallTracker:
         print("Results saved to ball_calibration.json")
 
     def calibrate(self):
+        self.force_next_frame = False
+        
         while self.calibration_count < self.max_calibrations:
             # Get random frame for each calibration
             frame, frame_number = self.get_random_frame()
             if frame is None:
-                break
-            
-            self.current_frame = frame.copy()
-            self.current_frame_number = frame_number
-            
-            while True:  # Loop for current frame until submitted or skipped
-                display_frame = self.current_frame.copy()
-                
-                # Draw current point
-                self.draw_point(display_frame)
-                
-                # Draw buttons
-                self.draw_buttons(display_frame)
-                
-                # Show calibration progress and instructions
-                cv2.putText(display_frame, 
-                           f'Calibration: {self.calibration_count + 1}/{self.max_calibrations}',
-                           (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-                
-                cv2.putText(display_frame, 
-                           'Click on the ball',
-                           (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-                
-                cv2.imshow('Ball Calibration', display_frame)
-                
-                key = cv2.waitKey(1) & 0xFF
-                if key == ord('q'):
-                    self.save_results()
-                    return self.calibration_points
-                
-                # Break inner loop if calibration was submitted or skipped
-                if len(self.calibration_points) > self.calibration_count or \
-                   self.calibration_count > len(self.calibration_points):
+                print("Error: Could not get valid frame, trying to reset video capture")
+                self.video.release()
+                self.video = cv2.VideoCapture("barrea.mp4")
+                if not self.video.isOpened():
+                    print("Fatal error: Could not reopen video")
                     break
+                continue
+            
+            try:
+                self.current_frame = frame.copy()
+                self.current_frame_number = frame_number
+                self.force_next_frame = False
                 
-                time.sleep(0.03)
+                while not self.force_next_frame:
+                    display_frame = self.current_frame.copy()
+                    
+                    # Draw current point
+                    self.draw_point(display_frame)
+                    
+                    # Draw buttons
+                    self.draw_buttons(display_frame)
+                    
+                    # Show calibration progress and instructions
+                    cv2.putText(display_frame, 
+                               f'Calibration: {self.calibration_count + 1}/{self.max_calibrations}',
+                               (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+                    
+                    cv2.putText(display_frame, 
+                               'Click on ball or press Skip if no ball visible',
+                               (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+                    
+                    cv2.imshow('Ball Calibration', display_frame)
+                    
+                    key = cv2.waitKey(1) & 0xFF
+                    if key == ord('q'):
+                        self.save_results()
+                        return self.calibration_points
+                    
+                    time.sleep(0.03)
+            except Exception as e:
+                print(f"Error processing frame: {e}")
+                continue
         
         cv2.destroyAllWindows()
         self.save_results()
