@@ -2922,5 +2922,405 @@
             "y": 231.0,
             "confidence": 0.7620254158973694
         }
+    },
+    {
+        "frame_number": 240349,
+        "x": 660.0,
+        "y": 791.0,
+        "timestamp": 1737455281.064866,
+        "ai_confidence": 0.9236204028129578,
+        "ai_validated": true,
+        "is_correction": false,
+        "no_ball": false,
+        "session_id": "20250121_112801",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 228853,
+        "x": null,
+        "y": null,
+        "timestamp": 1737455293.949804,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": true,
+        "session_id": "20250121_112813",
+        "ai_original_prediction": {
+            "x": null,
+            "y": null,
+            "confidence": 0.0
+        }
+    },
+    {
+        "frame_number": 209479,
+        "x": 395.0,
+        "y": 503.0,
+        "timestamp": 1737455303.774679,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": false,
+        "session_id": "20250121_112823",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 183616,
+        "x": 1136.0,
+        "y": 377.0,
+        "timestamp": 1737455308.812531,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": false,
+        "session_id": "20250121_112828",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 17603,
+        "x": 1642.0,
+        "y": 864.0,
+        "timestamp": 1737455321.541364,
+        "ai_confidence": 0.9142630696296692,
+        "ai_validated": true,
+        "is_correction": false,
+        "no_ball": false,
+        "session_id": "20250121_112841",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 129783,
+        "x": 1670.0,
+        "y": 509.0,
+        "timestamp": 1737455330.9779131,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": false,
+        "session_id": "20250121_112850",
+        "ai_original_prediction": {
+            "x": 1911.0,
+            "y": 304.0,
+            "confidence": 0.8382648229598999
+        }
+    },
+    {
+        "frame_number": 287716,
+        "x": null,
+        "y": null,
+        "timestamp": 1737455341.388303,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": true,
+        "session_id": "20250121_112901",
+        "ai_original_prediction": {
+            "x": null,
+            "y": null,
+            "confidence": 0.0
+        }
+    },
+    {
+        "frame_number": 315718,
+        "x": 790.0,
+        "y": 878.0,
+        "timestamp": 1737455347.3312,
+        "ai_confidence": 0.9166345596313477,
+        "ai_validated": true,
+        "is_correction": false,
+        "no_ball": false,
+        "session_id": "20250121_112907",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 4671,
+        "x": null,
+        "y": null,
+        "timestamp": 1737455352.885866,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": true,
+        "session_id": "20250121_112912",
+        "ai_original_prediction": {
+            "x": null,
+            "y": null,
+            "confidence": 0.0
+        }
+    },
+    {
+        "frame_number": 133131,
+        "x": 1230.0,
+        "y": 465.0,
+        "timestamp": 1737455382.1907341,
+        "ai_confidence": 0.8158620595932007,
+        "ai_validated": true,
+        "is_correction": false,
+        "no_ball": false,
+        "session_id": "20250121_112942",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 110044,
+        "x": 1394.0,
+        "y": 470.0,
+        "timestamp": 1737455390.527927,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": false,
+        "session_id": "20250121_112950",
+        "ai_original_prediction": {
+            "x": 430.0,
+            "y": 303.0,
+            "confidence": 0.7468652725219727
+        }
+    },
+    {
+        "frame_number": 160983,
+        "x": 838.0,
+        "y": 381.0,
+        "timestamp": 1737455402.574547,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": false,
+        "session_id": "20250121_113002",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 48031,
+        "x": null,
+        "y": null,
+        "timestamp": 1737455406.564901,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": true,
+        "session_id": "20250121_113006",
+        "ai_original_prediction": {
+            "x": null,
+            "y": null,
+            "confidence": 0.0
+        }
+    },
+    {
+        "frame_number": 124829,
+        "x": null,
+        "y": null,
+        "timestamp": 1737455410.415082,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": true,
+        "session_id": "20250121_113010",
+        "ai_original_prediction": {
+            "x": null,
+            "y": null,
+            "confidence": 0.0
+        }
+    },
+    {
+        "frame_number": 70026,
+        "x": 1198.0,
+        "y": 321.0,
+        "timestamp": 1737455426.0139499,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": false,
+        "session_id": "20250121_113026",
+        "ai_original_prediction": {
+            "x": 886.0,
+            "y": 251.0,
+            "confidence": 0.8594720363616943
+        }
+    },
+    {
+        "frame_number": 49071,
+        "x": null,
+        "y": null,
+        "timestamp": 1737455441.231881,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": true,
+        "session_id": "20250121_113041",
+        "ai_original_prediction": {
+            "x": 804.0,
+            "y": 181.0,
+            "confidence": 0.8018370270729065
+        }
+    },
+    {
+        "frame_number": 191557,
+        "x": 1595.0,
+        "y": 405.0,
+        "timestamp": 1737455445.8577862,
+        "ai_confidence": 0.8369992971420288,
+        "ai_validated": true,
+        "is_correction": false,
+        "no_ball": false,
+        "session_id": "20250121_113045",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 236954,
+        "x": null,
+        "y": null,
+        "timestamp": 1737455453.997779,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": true,
+        "session_id": "20250121_113053",
+        "ai_original_prediction": {
+            "x": null,
+            "y": null,
+            "confidence": 0.0
+        }
+    },
+    {
+        "frame_number": 99543,
+        "x": 1475.0,
+        "y": 793.0,
+        "timestamp": 1737455459.044489,
+        "ai_confidence": 0.8577306270599365,
+        "ai_validated": true,
+        "is_correction": false,
+        "no_ball": false,
+        "session_id": "20250121_113059",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 191529,
+        "x": 1624.0,
+        "y": 398.0,
+        "timestamp": 1737455486.425218,
+        "ai_confidence": 0.8873619437217712,
+        "ai_validated": true,
+        "is_correction": false,
+        "no_ball": false,
+        "session_id": "20250121_113126",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 294493,
+        "x": 1463.0,
+        "y": 484.0,
+        "timestamp": 1737455492.039816,
+        "ai_confidence": 0.8916565775871277,
+        "ai_validated": true,
+        "is_correction": false,
+        "no_ball": false,
+        "session_id": "20250121_113132",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 175261,
+        "x": 1172.0,
+        "y": 324.0,
+        "timestamp": 1737455502.5179331,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": false,
+        "session_id": "20250121_113142",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 96691,
+        "x": 348.0,
+        "y": 447.0,
+        "timestamp": 1737455514.255005,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": false,
+        "session_id": "20250121_113154",
+        "ai_original_prediction": {
+            "x": 1405.0,
+            "y": 176.0,
+            "confidence": 0.31172648072242737
+        }
+    },
+    {
+        "frame_number": 144869,
+        "x": 929.0,
+        "y": 572.0,
+        "timestamp": 1737455530.166689,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": false,
+        "session_id": "20250121_113210",
+        "ai_original_prediction": {
+            "x": 1189.0,
+            "y": 254.0,
+            "confidence": 0.6138399839401245
+        }
+    },
+    {
+        "frame_number": 169727,
+        "x": null,
+        "y": null,
+        "timestamp": 1737455568.0309188,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "no_ball": true,
+        "session_id": "20250121_113248",
+        "ai_original_prediction": {
+            "x": 1891.0,
+            "y": 1021.0,
+            "confidence": 0.32205212116241455
+        }
+    },
+    {
+        "frame_number": 241653,
+        "x": 711.0,
+        "y": 368.0,
+        "timestamp": 1737455570.992036,
+        "ai_confidence": 0.46887463331222534,
+        "ai_validated": true,
+        "is_correction": false,
+        "no_ball": false,
+        "session_id": "20250121_113250",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 101248,
+        "x": 1566.0,
+        "y": 820.0,
+        "timestamp": 1737455574.5781,
+        "ai_confidence": 0.5272262692451477,
+        "ai_validated": true,
+        "is_correction": false,
+        "no_ball": false,
+        "session_id": "20250121_113254",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 204181,
+        "x": 990.0,
+        "y": 880.0,
+        "timestamp": 1737455580.9833112,
+        "ai_confidence": 0.8770030736923218,
+        "ai_validated": true,
+        "is_correction": false,
+        "no_ball": false,
+        "session_id": "20250121_113300",
+        "ai_original_prediction": null
+    },
+    {
+        "frame_number": 157444,
+        "x": 668.0,
+        "y": 558.0,
+        "timestamp": 1737455587.015188,
+        "ai_confidence": 0.8446905016899109,
+        "ai_validated": true,
+        "is_correction": false,
+        "no_ball": false,
+        "session_id": "20250121_113307",
+        "ai_original_prediction": null
     }
 ]

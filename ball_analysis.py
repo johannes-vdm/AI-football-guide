@@ -662,6 +662,35 @@ class BallTracker:
         
         return display_frame
 
+    def calculate_accuracy(self, calibration_points):
+        total_frames = len(calibration_points)
+        correct_predictions = 0
+        avg_confidence = 0
+        total_with_confidence = 0
+        
+        for point in calibration_points:
+            if point.get('ai_validated', False):
+                # AI was correct and user confirmed
+                correct_predictions += 1
+                avg_confidence += point.get('ai_confidence', 0)
+                total_with_confidence += 1
+            elif point.get('no_ball', False):
+                # AI made a prediction when there was no ball
+                if point.get('ai_original_prediction') is None:
+                    # AI correctly didn't detect a ball
+                    correct_predictions += 1
+            elif point.get('is_correction', False) and point.get('ai_original_prediction'):
+                # User had to correct AI's prediction
+                orig = point['ai_original_prediction']
+                if orig.get('confidence'):
+                    avg_confidence += orig['confidence']
+                    total_with_confidence += 1
+        
+        accuracy = (correct_predictions / total_frames) * 100 if total_frames > 0 else 0
+        avg_confidence = (avg_confidence / total_with_confidence) * 100 if total_with_confidence > 0 else 0
+        
+        return accuracy, avg_confidence
+
     def calibrate(self):
         print("\nStarting calibration loop...")
         self.force_next_frame = False
@@ -759,6 +788,14 @@ class BallTracker:
         print("\nCalibration loop completed")
         cv2.destroyAllWindows()
         self.save_results()
+        
+        # Calculate and display accuracy
+        accuracy, avg_confidence = self.calculate_accuracy(self.calibration_points)
+        print("\nCalibration Results:")
+        print(f"AI Accuracy: {accuracy:.1f}%")
+        print(f"Average Confidence: {avg_confidence:.1f}%")
+        print(f"Total Frames Processed: {frame_count}")
+        
         return self.calibration_points
 
     def start(self):
