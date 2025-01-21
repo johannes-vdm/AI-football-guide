@@ -27,9 +27,10 @@ class BallTracker:
         self.max_calibrations = 5
         self.force_next_frame = False
         
-        # Larger button dimensions
-        self.button_submit = {'x': 50, 'y': 30, 'w': 150, 'h': 50}
-        self.button_skip = {'x': 250, 'y': 30, 'w': 150, 'h': 50}
+        # Redesign button layout
+        self.button_ai_correct = {'x': 50, 'y': 30, 'w': 150, 'h': 50}
+        self.button_ai_wrong = {'x': 220, 'y': 30, 'w': 150, 'h': 50}
+        self.button_skip = {'x': 390, 'y': 30, 'w': 150, 'h': 50}
         
         cv2.namedWindow('Ball Calibration')
         cv2.setMouseCallback('Ball Calibration', self.mouse_callback)
@@ -38,9 +39,9 @@ class BallTracker:
 
     def setup_model(self):
         print("Loading PyTorch model...")
-        # Load pre-trained Faster R-CNN
+        # Load pre-trained Faster R-CNN with updated parameter
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model = detection.fasterrcnn_resnet50_fpn(pretrained=True)
+        self.model = detection.fasterrcnn_resnet50_fpn(weights='DEFAULT')  # Changed from pretrained=True
         self.model.to(self.device)
         self.model.eval()
         print(f"Model loaded on {self.device}")
@@ -72,14 +73,24 @@ class BallTracker:
         return None, None
 
     def draw_buttons(self, frame):
-        # Draw Submit button
+        # Draw AI Correct button
         cv2.rectangle(frame, 
-                     (self.button_submit['x'], self.button_submit['y']), 
-                     (self.button_submit['x'] + self.button_submit['w'], 
-                      self.button_submit['y'] + self.button_submit['h']), 
+                     (self.button_ai_correct['x'], self.button_ai_correct['y']), 
+                     (self.button_ai_correct['x'] + self.button_ai_correct['w'], 
+                      self.button_ai_correct['y'] + self.button_ai_correct['h']), 
                      (0, 255, 0), -1)
-        cv2.putText(frame, 'Submit', 
-                   (self.button_submit['x'] + 20, self.button_submit['y'] + 25),
+        cv2.putText(frame, 'AI Correct', 
+                   (self.button_ai_correct['x'] + 20, self.button_ai_correct['y'] + 25),
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
+        
+        # Draw AI Wrong button
+        cv2.rectangle(frame, 
+                     (self.button_ai_wrong['x'], self.button_ai_wrong['y']),
+                     (self.button_ai_wrong['x'] + self.button_ai_wrong['w'], 
+                      self.button_ai_wrong['y'] + self.button_ai_wrong['h']),
+                     (0, 255, 255), -1)
+        cv2.putText(frame, 'AI Wrong',
+                   (self.button_ai_wrong['x'] + 30, self.button_ai_wrong['y'] + 25),
                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
         
         # Draw Skip button
@@ -94,41 +105,66 @@ class BallTracker:
 
     def draw_point(self, frame):
         if self.current_point:
-            cv2.circle(frame, self.current_point, 5, (0, 255, 0), -1)
-            cv2.circle(frame, self.current_point, 20, (0, 255, 0), 2)
+            cv2.circle(frame, self.current_point, 2, (0, 255, 0), -1)  # Smaller center dot
+            cv2.circle(frame, self.current_point, 10, (0, 255, 0), 1)  # Smaller outer circle
 
     def mouse_callback(self, event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN:
-            # Check if click is on skip button first
-            if (self.button_skip['x'] <= x <= self.button_skip['x'] + self.button_skip['w'] and
-                  self.button_skip['y'] <= y <= self.button_skip['y'] + self.button_skip['h']):
-                self.calibration_count += 1
-                self.current_point = None
-                print(f"Frame {self.calibration_count} skipped")
-                # Force break from the current frame loop
-                self.force_next_frame = True
-                return
-
-            # Check submit button
-            elif (self.button_submit['x'] <= x <= self.button_submit['x'] + self.button_submit['w'] and
-                self.button_submit['y'] <= y <= self.button_submit['y'] + self.button_submit['h']):
-                if self.current_point:  # Only submit if we have a point
+            print(f"\nClick detected at x:{x}, y:{y}")
+            
+            # Check AI Correct button
+            if (self.button_ai_correct['x'] <= x <= self.button_ai_correct['x'] + self.button_ai_correct['w'] and
+                self.button_ai_correct['y'] <= y <= self.button_ai_correct['y'] + self.button_ai_correct['h']):
+                print("AI Correct button clicked!")
+                ball_center, confidence = self.detect_ball(self.current_frame)
+                if ball_center:
                     self.calibration_points.append({
                         'frame_number': self.current_frame_number,
-                        'point': self.current_point,
-                        'timestamp': time.time()
+                        'x': ball_center[0],
+                        'y': ball_center[1],
+                        'timestamp': time.time(),
+                        'ai_confidence': confidence,
+                        'ai_validated': True
                     })
                     self.calibration_count += 1
-                    self.current_point = None
-                    print(f"Calibration {self.calibration_count} saved")
+                    print(f"AI prediction saved with confidence {confidence:.2f}")
                     self.save_results()
-                    # Force break from the current frame loop
                     self.force_next_frame = True
-                    return
+                return
+
+            # Check AI Wrong button
+            elif (self.button_ai_wrong['x'] <= x <= self.button_ai_wrong['x'] + self.button_ai_wrong['w'] and
+                  self.button_ai_wrong['y'] <= y <= self.button_ai_wrong['y'] + self.button_ai_wrong['h']):
+                print("AI Wrong button clicked!")
+                self.current_point = None  # Reset point for manual selection
+                print("Please click on the correct ball position")
+                return
+
+            # Check Skip button
+            elif (self.button_skip['x'] <= x <= self.button_skip['x'] + self.button_skip['w'] and
+                  self.button_skip['y'] <= y <= self.button_skip['y'] + self.button_skip['h']):
+                print("Skip button clicked!")
+                self.calibration_count += 1
+                self.current_point = None
+                self.force_next_frame = True
+                print(f"Frame {self.calibration_count} skipped")
+                return
+
+            # Handle manual ball position click
             else:
-                # Set new point
                 self.current_point = (x, y)
-                print(f"Ball position marked at {x}, {y}")
+                print(f"Manual ball position marked at {x}, {y}")
+                # Save manual position
+                self.calibration_points.append({
+                    'frame_number': self.current_frame_number,
+                    'x': x,
+                    'y': y,
+                    'timestamp': time.time(),
+                    'ai_validated': False
+                })
+                self.calibration_count += 1
+                self.save_results()
+                self.force_next_frame = True
 
     def save_results(self):
         # Load existing results if file exists
@@ -146,7 +182,9 @@ class BallTracker:
                 'x': point['point'][0],
                 'y': point['point'][1],
                 'timestamp': point['timestamp'],
-                'session_id': time.strftime("%Y%m%d_%H%M%S")  # Add session identifier
+                'session_id': time.strftime("%Y%m%d_%H%M%S"),  # Add session identifier
+                'ai_confidence': point['ai_confidence'],
+                'ai_validated': point['ai_validated']
             }
             existing_results.append(new_point)
         
@@ -189,17 +227,17 @@ class BallTracker:
         ball_center, confidence = self.detect_ball(frame)
         
         if ball_center:
-            # Draw suggested point in blue
-            cv2.circle(display_frame, ball_center, 5, (255, 0, 0), -1)
-            cv2.circle(display_frame, ball_center, 20, (255, 0, 0), 2)
+            # Draw suggested point in blue (smaller)
+            cv2.circle(display_frame, ball_center, 2, (255, 0, 0), -1)  # Smaller center dot
+            cv2.circle(display_frame, ball_center, 10, (255, 0, 0), 1)  # Smaller outer circle
             cv2.putText(display_frame, 
                        f'AI Confidence: {confidence:.2f}',
                        (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
         
         # Draw user's point in green if it exists
         if self.current_point:
-            cv2.circle(display_frame, self.current_point, 5, (0, 255, 0), -1)
-            cv2.circle(display_frame, self.current_point, 20, (0, 255, 0), 2)
+            cv2.circle(display_frame, self.current_point, 2, (0, 255, 0), -1)  # Smaller center dot
+            cv2.circle(display_frame, self.current_point, 10, (0, 255, 0), 1)  # Smaller outer circle
         
         # Draw buttons
         self.draw_buttons(display_frame)
@@ -256,9 +294,10 @@ class BallTracker:
         print("Starting calibration mode...")
         print("Instructions:")
         print("1. Click on the ball in the frame")
-        print("2. Click 'Submit' to save the position")
-        print("3. Click 'Skip' if ball is not visible")
-        print("4. Repeat for 5 different frames")
+        print("2. Click 'AI Correct' to save the position")
+        print("3. Click 'AI Wrong' if ball is not visible")
+        print("4. Click 'Skip' if ball is not visible")
+        print("5. Repeat for 5 different frames")
         print("Press 'q' to quit at any time")
         print("Results will be saved to ball_calibration.json")
         
