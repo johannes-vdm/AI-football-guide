@@ -93,5 +93,153 @@
         "y": 437,
         "timestamp": 1737420261.820648,
         "session_id": "20250121_014421"
+    },
+    {
+        "frame_number": 143173,
+        "x": 929,
+        "y": 459,
+        "timestamp": 1737421433.3797288,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "session_id": "20250121_020353"
+    },
+    {
+        "frame_number": 143173,
+        "x": 929,
+        "y": 459,
+        "timestamp": 1737421433.3797288,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "session_id": "20250121_020412"
+    },
+    {
+        "frame_number": 332269,
+        "x": 863,
+        "y": 474,
+        "timestamp": 1737421452.328762,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "session_id": "20250121_020412"
+    },
+    {
+        "frame_number": 143173,
+        "x": 929,
+        "y": 459,
+        "timestamp": 1737421433.3797288,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "session_id": "20250121_020428"
+    },
+    {
+        "frame_number": 332269,
+        "x": 863,
+        "y": 474,
+        "timestamp": 1737421452.328762,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "session_id": "20250121_020428"
+    },
+    {
+        "frame_number": 87405,
+        "x": 1588,
+        "y": 416,
+        "timestamp": 1737421468.178706,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "session_id": "20250121_020428"
+    },
+    {
+        "frame_number": 143173,
+        "x": 929,
+        "y": 459,
+        "timestamp": 1737421433.3797288,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "session_id": "20250121_020437"
+    },
+    {
+        "frame_number": 332269,
+        "x": 863,
+        "y": 474,
+        "timestamp": 1737421452.328762,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "session_id": "20250121_020437"
+    },
+    {
+        "frame_number": 87405,
+        "x": 1588,
+        "y": 416,
+        "timestamp": 1737421468.178706,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "session_id": "20250121_020437"
+    },
+    {
+        "frame_number": 283973,
+        "x": 1389,
+        "y": 485,
+        "timestamp": 1737421621.2781298,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "ai_original_prediction": {
+            "x": null,
+            "y": null,
+            "confidence": 0.0
+        },
+        "session_id": "20250121_020701"
+    },
+    {
+        "frame_number": 283973,
+        "x": 1389,
+        "y": 485,
+        "timestamp": 1737421621.2781298,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "ai_original_prediction": {
+            "x": null,
+            "y": null,
+            "confidence": 0.0
+        },
+        "session_id": "20250121_020717"
+    },
+    {
+        "frame_number": 287899,
+        "x": 320,
+        "y": 536,
+        "timestamp": 1737421637.5931678,
+        "ai_confidence": 0.9369539618492126,
+        "ai_validated": true,
+        "is_correction": false,
+        "ai_original_prediction": null,
+        "session_id": "20250121_020717"
+    },
+    {
+        "frame_number": 283973,
+        "x": 1389,
+        "y": 485,
+        "timestamp": 1737421621.2781298,
+        "ai_confidence": null,
+        "ai_validated": false,
+        "is_correction": true,
+        "ai_original_prediction": {
+            "x": null,
+            "y": null,
+            "confidence": 0.0
+        },
+        "session_id": "20250121_020717"
+    },
+    {
+        "frame_number": 287899,
+        "x": 320,
+        "y": 536,
+        "timestamp": 1737421637.5931678,
+        "ai_confidence": 0.9369539618492126,
+        "ai_validated": true,
+        "is_correction": false,
+        "ai_original_prediction": null,
+        "session_id": "20250121_020717"
     }
 ]
