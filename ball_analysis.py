@@ -561,8 +561,9 @@ class BallTracker:
         
         if ball_center:
             # Draw suggested point in blue (smaller)
-            cv2.circle(display_frame, ball_center, 2, (255, 0, 0), -1)  # Smaller center dot
-            cv2.circle(display_frame, ball_center, 10, (255, 0, 0), 1)  # Smaller outer circle
+            # make the text white
+            cv2.circle(display_frame, ball_center, 2, (255, 255, 255), -1)  # Smaller center dot
+            cv2.circle(display_frame, ball_center, 10, (255, 255, 255), 1)  # Smaller outer circle
             
             # Move confidence text to top right
             confidence_text = f'AI Confidence: {confidence:.2f}'
